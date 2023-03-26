@@ -10,14 +10,14 @@ if #[cfg(feature = "ssr")] {
     use sqlx::SqlitePool;
     use axum_sessions_auth::{SessionSqlitePool, Authentication, HasPermission};
     use bcrypt::{hash, verify, DEFAULT_COST};
-    use crate::todo::{pool, auth};
+    use crate::app::{pool, auth};
     pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionSqlitePool, SqlitePool>;
 }}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
     pub id: i64,
-    pub username: String,
+    pub email: String,
     pub password: String,
     pub permissions: HashSet<String>,
 }
@@ -26,7 +26,7 @@ impl Default for User {
     fn default() -> Self {
         Self {
             id: -1,
-            username: "Guest".into(),
+            email: "Guest".into(),
             password: "".into(),
             permissions: HashSet::new(),
         }
@@ -123,7 +123,7 @@ if #[cfg(feature = "ssr")] {
         pub fn into_user(self, sql_user_perms: Option<Vec<SqlPermissionTokens>>) -> User {
             User {
                 id: self.id,
-                username: self.username,
+                email: self.username,
                 password: self.password,
                 permissions: if let Some(user_perms) = sql_user_perms {
                     user_perms
@@ -149,34 +149,6 @@ pub async fn get_user(cx: Scope) -> Result<Option<User>, ServerFnError> {
     let auth = auth(cx)?;
 
     Ok(auth.current_user)
-}
-
-#[server(Login, "/api")]
-pub async fn login(
-    cx: Scope,
-    username: String,
-    password: String,
-    remember: Option<String>,
-) -> Result<(), ServerFnError> {
-    let pool = pool(cx)?;
-    let auth = auth(cx)?;
-
-    let user: User = User::get_from_username(username, &pool)
-        .await
-        .ok_or("User does not exist.")
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
-
-    match verify(password, &user.password).map_err(|e| ServerFnError::ServerError(e.to_string()))? {
-        true => {
-            auth.login_user(user.id);
-            auth.remember_user(remember.is_some());
-            leptos_axum::redirect(cx, "/");
-            Ok(())
-        }
-        false => Err(ServerFnError::ServerError(
-            "Password does not match.".to_string(),
-        )),
-    }
 }
 
 #[server(Signup, "/api")]
@@ -213,16 +185,6 @@ pub async fn signup(
     auth.login_user(user.id);
     auth.remember_user(remember.is_some());
 
-    leptos_axum::redirect(cx, "/");
-
-    Ok(())
-}
-
-#[server(Logout, "/api")]
-pub async fn logout(cx: Scope) -> Result<(), ServerFnError> {
-    let auth = auth(cx)?;
-
-    auth.logout_user();
     leptos_axum::redirect(cx, "/");
 
     Ok(())

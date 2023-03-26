@@ -11,7 +11,7 @@ if #[cfg(feature = "ssr")] {
         body::Body as AxumBody,
         Router,
     };
-    use session_auth_axum::todo::*;
+    use session_auth_axum::app::*;
     use session_auth_axum::auth::*;
     use session_auth_axum::*;
     use session_auth_axum::fallback::file_and_error_handler;
@@ -43,7 +43,7 @@ if #[cfg(feature = "ssr")] {
                 provide_context(cx, auth_session.clone());
                 provide_context(cx, pool.clone());
             },
-            |cx| view! { cx, <TodoApp/> }
+            |cx| view! { cx, <App/> }
         );
         handler(req).await.into_response()
     }
@@ -68,13 +68,13 @@ if #[cfg(feature = "ssr")] {
             .await
             .expect("could not run SQLx migrations");
 
-        crate::todo::register_server_functions();
+        crate::app::register_server_functions();
 
         // Setting this to None means we'll be using cargo-leptos and its env vars
         let conf = get_configuration(None).await.unwrap();
         let leptos_options = conf.leptos_options;
         let addr = leptos_options.site_addr;
-        let routes = generate_route_list(|cx| view! { cx, <TodoApp/> }).await;
+        let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
         // build our application with a route
         let app = Router::new()
