@@ -108,6 +108,10 @@ pub async fn add_todo(cx: Scope, title: String) -> Result<(), ServerFnError> {
         None => -1,
     };
 
+    if id == -1 {
+        return Err(ServerFnError::ServerError("Not logged in.".to_string()));
+    }
+
     // fake API delay
     std::thread::sleep(std::time::Duration::from_millis(1250));
 
@@ -159,7 +163,7 @@ pub fn TodoApp(cx: Scope) -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/session_auth_axum.css"/>
         <Router>
             <header>
-                <A href="/"><h1>"My Tasks"</h1></A>
+                <A href="/"><h1 class="my-10">"My Tasks"</h1></A>
                 <Transition
                     fallback=move || view! {cx, <span>"Loading..."</span>}
                 >
@@ -200,10 +204,23 @@ pub fn TodoApp(cx: Scope) -> impl IntoView {
                         cx,
                         <Login action=login />
                     }/>
-                    <Route path="settings" view=move |cx| view! {
-                        cx,
-                        <h1>"Settings"</h1>
-                        <Logout action=logout />
+                    <Route path="settings" view=move |cx| {
+                        if let Some(Ok(user)) = user.read(cx) {
+                            view! {
+                                cx,
+                                <div>
+                                <h1 class="text-orange">"Settings for {user:?}"</h1>
+                                <Logout action=logout />
+                                </div>
+                            }
+                        } else {
+                            view! {
+                                cx,
+                                <div>
+                                <h1>"You need to log in"</h1>
+                                </div>
+                            }
+                        }
                     }/>
                 </Routes>
             </main>

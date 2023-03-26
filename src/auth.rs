@@ -24,13 +24,11 @@ pub struct User {
 
 impl Default for User {
     fn default() -> Self {
-        let permissions = HashSet::new();
-
         Self {
             id: -1,
             username: "Guest".into(),
             password: "".into(),
-            permissions,
+            permissions: HashSet::new(),
         }
     }
 }

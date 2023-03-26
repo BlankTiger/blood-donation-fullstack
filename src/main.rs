@@ -32,7 +32,12 @@ if #[cfg(feature = "ssr")] {
         }, request).await
     }
 
-    async fn leptos_routes_handler(Extension(pool): Extension<SqlitePool>, auth_session: AuthSession, Extension(options): Extension<Arc<LeptosOptions>>, req: Request<AxumBody>) -> Response{
+    async fn leptos_routes_handler(
+        Extension(pool): Extension<SqlitePool>,
+        auth_session: AuthSession,
+        Extension(options): Extension<Arc<LeptosOptions>>,
+        req: Request<AxumBody>
+    ) -> Response{
             let handler = leptos_axum::render_app_to_stream_with_context((*options).clone(),
             move |cx| {
                 provide_context(cx, auth_session.clone());
@@ -73,14 +78,14 @@ if #[cfg(feature = "ssr")] {
 
         // build our application with a route
         let app = Router::new()
-        .route("/api/*fn_name", post(server_fn_handler))
-        .leptos_routes_with_handler(routes, get(leptos_routes_handler) )
-        .fallback(file_and_error_handler)
-        .layer(AuthSessionLayer::<User, i64, SessionSqlitePool, SqlitePool>::new(Some(pool.clone()))
-                    .with_config(auth_config))
-        .layer(SessionLayer::new(session_store))
-        .layer(Extension(Arc::new(leptos_options)))
-        .layer(Extension(pool));
+            .route("/api/*fn_name", post(server_fn_handler))
+            .leptos_routes_with_handler(routes, get(leptos_routes_handler) )
+            .fallback(file_and_error_handler)
+            .layer(AuthSessionLayer::<User, i64, SessionSqlitePool, SqlitePool>::new(Some(pool.clone()))
+                        .with_config(auth_config))
+            .layer(SessionLayer::new(session_store))
+            .layer(Extension(Arc::new(leptos_options)))
+            .layer(Extension(pool));
 
         // run our app with hyper
         // `axum::Server` is a re-export of `hyper::Server`
