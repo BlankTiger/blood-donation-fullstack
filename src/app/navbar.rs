@@ -12,7 +12,7 @@ pub fn Navbar(
         cx,
         <nav
             id="header"
-            class="w-full z-30 py-1 bg-white shadow-lg border-b border-blue-400"
+            class="w-full z-30 py-1 bg-white shadow-lg border-b border-blue-400 fixed top-0"
         >
             <Transition
                 fallback=move || view! {cx, <span>"Loading..."</span>}

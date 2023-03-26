@@ -7,7 +7,6 @@ mod stations_table;
 use crate::app::home::*;
 use crate::app::login::*;
 use crate::app::logout::Logout;
-use crate::app::logout::*;
 use crate::app::navbar::*;
 use crate::auth::*;
 use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
@@ -71,7 +70,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Suspense fallback=move || view!{cx, <h1>{"Loading..."}</h1>}>
             <Router>
                 <Navbar logged_in_user={user_signal} logout_action={logout} />
-                <main>
+                <main class="w-screen h-screen flex items-center">
                     <Routes>
                         <Route path="" view=move |cx| view! {
                                 cx,
