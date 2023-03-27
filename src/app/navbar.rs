@@ -28,12 +28,12 @@ pub fn Navbar(
                                     <ul class="md:flex items-center justify-between text-base text-blue-600 pt-4 md:pt-0">
                                         <li>
                                             <A class="inline-block no-underline hover:text-black font-medium text-lg py-2 px-4 lg:-ml-2"
-                                                href="/add_station">
-                                                "Dodaj stację"
+                                                href="/">
+                                                "Home"
                                             </A>
                                         </li>
                                         <li>
-                                            <A class="inline-block no-underline hover:text-black font-medium text-lg py-2 px-4 lg:-ml-2" href="/settings">"Ustawienia"</A>
+                                            <A class="inline-block no-underline hover:text-black font-medium text-lg py-2 px-4 lg:-ml-2" href="/admin">"Dashboard"</A>
                                         </li>
                                     </ul>
                                 </nav>

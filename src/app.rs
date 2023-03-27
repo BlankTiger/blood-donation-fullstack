@@ -4,10 +4,12 @@ mod logout;
 mod navbar;
 mod overview;
 mod stations_table;
+mod admin_dashboard;
 use crate::app::home::*;
 use crate::app::login::*;
 use crate::app::logout::Logout;
 use crate::app::navbar::*;
+use crate::app::admin_dashboard::*;
 use crate::auth::*;
 use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
 use cfg_if::cfg_if;
@@ -19,6 +21,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::SqlitePool;
         use crate::app::login::AuthSession;
+        use crate::app::admin_dashboard::stations_table::StationsTable;
 
         pub fn pool(cx: Scope) -> Result<SqlitePool, ServerFnError> {
             Ok(use_context::<SqlitePool>(cx)
@@ -37,7 +40,7 @@ cfg_if! {
             _ = Logout::register();
             _ = Signup::register();
             _ = GetUser::register();
-            _ = Foo::register();
+            _ = StationsTable::register();
         }
     }
 }
@@ -78,6 +81,12 @@ pub fn App(cx: Scope) -> impl IntoView {
                                     <Home logged_in_user={user_signal} />
                                 </ErrorBoundary>
                         }/> //Route
+                        <Route path="admin" view=move |cx| {
+                            view! {
+                                cx,
+                                <AdminDashboard user={user_signal} />
+                            }
+                        }/>
                         <Route path="login" view=move |cx| {
                             view! {
                                 cx,

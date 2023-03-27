@@ -31,7 +31,7 @@ pub async fn login(
         true => {
             auth.login_user(user.id);
             auth.remember_user(remember.is_some());
-            leptos_axum::redirect(cx, "/");
+            leptos_axum::redirect(cx, "/admin");
             Ok(())
         }
         false => Err(ServerFnError::ServerError(

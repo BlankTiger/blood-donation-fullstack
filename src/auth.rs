@@ -33,6 +33,17 @@ impl Default for User {
     }
 }
 
+pub trait IsAdmin {
+    fn is_admin(&self) -> bool;
+}
+
+impl IsAdmin for User {
+    fn is_admin(&self) -> bool {
+        self.email == "yourstara"
+        // self.permissions.contains("admin")
+    }
+}
+
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use async_trait::async_trait;
@@ -137,11 +148,6 @@ if #[cfg(feature = "ssr")] {
         }
     }
 }
-}
-
-#[server(Foo, "/api")]
-pub async fn foo() -> Result<String, ServerFnError> {
-    Ok(String::from("Bar!"))
 }
 
 #[server(GetUser, "/api")]
