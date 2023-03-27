@@ -21,7 +21,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::SqlitePool;
         use crate::app::login::AuthSession;
-        use crate::app::admin_dashboard::stations_table::StationsTable;
+        use crate::app::admin_dashboard::stations_table::*;
 
         pub fn pool(cx: Scope) -> Result<SqlitePool, ServerFnError> {
             Ok(use_context::<SqlitePool>(cx)
@@ -49,6 +49,7 @@ cfg_if! {
 pub fn App(cx: Scope) -> impl IntoView {
     let login = create_server_action::<Login>(cx);
     let logout = create_server_action::<Logout>(cx);
+    let signup = create_server_action::<Signup>(cx);
 
     let user = create_resource(
         cx,
@@ -91,6 +92,12 @@ pub fn App(cx: Scope) -> impl IntoView {
                             view! {
                                 cx,
                                 <Login action=login />
+                            }
+                        }/>
+                        <Route path="signup" view=move |cx| {
+                            view! {
+                                cx,
+                                <Signup action=signup />
                             }
                         }/>
                         <Route path="logout" view=move |cx| {

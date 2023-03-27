@@ -33,15 +33,12 @@ CREATE TABLE IF NOT EXISTS stations (
   city       TEXT NOT NULL,
   phone      TEXT NOT NULL,
   hyperlink  TEXT NOT NULL,
-  amount_a_plus INTEGER NOT NULL,
-  amount_a_minus INTEGER NOT NULL,
-  amount_b_plus INTEGER NOT NULL,
-  amount_b_minus INTEGER NOT NULL,
-  amount_ab_plus INTEGER NOT NULL,
-  amount_ab_minus INTEGER NOT NULL,
-  amount_o_plus INTEGER NOT NULL,
-  amount_o_minus INTEGER NOT NULL,
+  amount_a_plus REAL NOT NULL,
+  amount_a_minus REAL NOT NULL,
+  amount_b_plus REAL NOT NULL,
+  amount_b_minus REAL NOT NULL,
+  amount_ab_plus REAL NOT NULL,
+  amount_ab_minus REAL NOT NULL,
+  amount_o_plus REAL NOT NULL,
+  amount_o_minus REAL NOT NULL
 );
-
-
-INSERT INTO stations (name, address, city, phone, hyperlink, amount_a_plus, amount_a_minus, amount_b_plus, amount_b_minus, amount_ab_plus, amount_ab_minus, amount_o_plus, amount_o_minus) VALUES ('Blood Bank', 'Kathmandu', 'Kathmandu', '01-4444444', 'https://www.google.com', 10, 10, 10, 10, 10, 10, 10, 10);
