@@ -1,36 +1,14 @@
-use leptos::*;
 use crate::app::stations_table::*;
-
-use super::UserResource;
+use crate::app::AuthGuard;
+use crate::app::AuthGuardProps;
+use leptos::*;
 
 
 #[component]
 pub fn AdminDashboard(cx: Scope) -> impl IntoView {
-    let user = use_context::<UserResource>(cx).expect("User resource to be present");
-
-    view! {cx,
-        <Suspense fallback=move || view! { cx, <h1>"Loading..."</h1> }>
-        {user.read(cx).map(move |user| match user {
-            Some(_) => view! {cx,
-                <div class="w-full mt-96">
+    view! { cx, <AuthGuard view=move || view! {cx,
+                <div class="w-full">
                     <StationsTable />
                 </div>
-            }.into_view(cx),
-            None => view! {cx,
-                <Unauthorized />
-            }.into_view(cx)
-        })}
-        </Suspense>
-    }
-}
-
-#[component]
-fn Unauthorized(cx: Scope) -> impl IntoView {
-    view! { cx,
-        <div class="flex w-full items-center justify-center">
-            <h1 class="text-black text-4xl pt-20 px-20 text-center">
-                "You are not authorized to view this page."
-            </h1>
-        </div>
-    }
+    } />}
 }

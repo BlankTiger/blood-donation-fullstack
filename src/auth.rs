@@ -5,6 +5,8 @@ use leptos::*;
 
 use serde::{Deserialize, Serialize};
 
+use crate::app::UserResource;
+
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use sqlx::MySqlPool;
@@ -101,7 +103,7 @@ if #[cfg(feature = "ssr")] {
         }
 
         fn is_anonymous(&self) -> bool {
-            self.username == "Guest"
+            self.email == "Guest"
         }
     }
 
@@ -183,4 +185,33 @@ pub async fn signup(
     leptos_axum::redirect(cx, "/");
 
     Ok(())
+}
+
+#[component]
+pub fn AuthGuard<F, IV>(cx: Scope, view: F) -> impl IntoView
+where
+    F: Fn() -> IV + 'static,
+    IV: IntoView,
+{
+    let user = use_context::<UserResource>(cx).expect("userresource to be provided");
+
+    view! { cx,
+        <Suspense fallback=move || view! {cx, <div>"Loading..."</div>}>
+        {user.read(cx).map(|user| match user {
+            Some(_) => view().into_view(cx),
+            None => view! {cx, <Unauthorized />}.into_view(cx)
+        })}
+        </Suspense>
+    }
+}
+
+#[component]
+pub fn Unauthorized(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <div class="flex w-full items-center justify-center">
+            <h1 class="text-black text-4xl pt-20 px-20 text-center">
+                "You are not authorized to view this page."
+            </h1>
+        </div>
+    }
 }

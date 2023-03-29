@@ -5,7 +5,6 @@ create table if not exists stations (
 	address varchar(255) not null,
 	city varchar(255) not null,
 	phone varchar(255) not null,
-	hyperlink varchar(255) not null,
 	amount_a_plus float(10, 2) not null,
 	amount_a_minus float(10, 2) not null,
 	amount_b_plus float(10, 2) not null,

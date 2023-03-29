@@ -5,11 +5,13 @@ mod logout;
 mod navbar;
 mod overview;
 mod stations_table;
+mod add_station;
 use crate::app::admin_dashboard::*;
 use crate::app::home::*;
 use crate::app::login::*;
 use crate::app::logout::Logout;
 use crate::app::navbar::*;
+use crate::app::add_station::*;
 use crate::auth::*;
 use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
 use cfg_if::cfg_if;
@@ -41,6 +43,7 @@ cfg_if! {
             _ = Signup::register();
             _ = GetUser::register();
             _ = StationsTable::register();
+            _ = AddStation::register();
         }
     }
 }
@@ -78,33 +81,33 @@ pub fn App(cx: Scope) -> impl IntoView {
             <Navbar logout_action={logout} />
             <main class="w-screen h-screen flex items-center">
                 <Routes>
-                    <Route path="" view=move |cx| view! {
-                            cx,
+                    <Route path="" view=move |cx| view! { cx,
                             <ErrorBoundary fallback=move |cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
                                 <Home />
                             </ErrorBoundary>
                     }/> //Route
                     <Route path="admin" view=move |cx| {
-                        view! {
-                            cx,
+                        view! { cx,
                             <AdminDashboard />
                         }
                     }/>
+                    <Route path="add-station" view=move |cx| {
+                        view! { cx,
+                            <AddStation />
+                        }
+                    }/>
                     <Route path="login" view=move |cx| {
-                        view! {
-                            cx,
+                        view! { cx,
                             <Login action=login />
                         }
                     }/>
                     <Route path="signup" view=move |cx| {
-                        view! {
-                            cx,
+                        view! { cx,
                             <Signup action=signup />
                         }
                     }/>
                     <Route path="logout" view=move |cx| {
-                        view! {
-                            cx,
+                        view! { cx,
                             <h1>"Logging out..."</h1>
                         }
                     }/>

@@ -1,6 +1,5 @@
 use cfg_if::cfg_if;
 use leptos::{server_fn, *};
-use leptos_router::*;
 use serde::{Deserialize, Serialize};
 
 cfg_if! {
@@ -10,13 +9,12 @@ cfg_if! {
         use sqlx::FromRow;
 
         #[derive(FromRow, Clone, Debug)]
-        pub struct SqlStations {
+        pub struct SqlStation {
             id: i32,
             name: String,
             address: String,
             city: String,
             phone: String,
-            hyperlink: String,
             #[sqlx(flatten)]
             available_blood: SqlAvailableBlood,
         }
@@ -48,16 +46,15 @@ cfg_if! {
             }
         }
 
-        impl From<SqlStations> for Station {
-            fn from(sql_stations: SqlStations) -> Self {
+        impl From<SqlStation> for Station {
+            fn from(sql_station: SqlStation) -> Self {
                 Station {
-                    id: sql_stations.id,
-                    name: sql_stations.name,
-                    address: sql_stations.address,
-                    city: sql_stations.city,
-                    phone: sql_stations.phone,
-                    hyperlink: sql_stations.hyperlink,
-                    available_blood: sql_stations.available_blood.into(),
+                    id: sql_station.id,
+                    name: sql_station.name,
+                    address: sql_station.address,
+                    city: sql_station.city,
+                    phone: sql_station.phone,
+                    available_blood: sql_station.available_blood.into(),
                 }
             }
         }
@@ -84,7 +81,6 @@ pub struct Station {
     address: String,
     city: String,
     phone: String,
-    hyperlink: String,
     available_blood: AvailableBlood,
 }
 
@@ -102,13 +98,9 @@ fn stations_to_rows(cx: Scope, stations: Vec<Station>) -> impl IntoView {
                         cx,
                         <tr>
                             <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{station.name}</td>
-                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{station.city}</td>
                             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{station.address}</td>
+                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">{station.city}</td>
                             <td class="whitespace-nowrap px-4 py-2 text-gray-700">{station.phone}</td>
-                            <td class="whitespace-nowrap px-4 py-2">
-                                <A href="przykladowa-stacja.html"
-                                    class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">{station.hyperlink}</A>
-                            </td>
                         </tr>
                     }
             }/>
@@ -117,35 +109,10 @@ fn stations_to_rows(cx: Scope, stations: Vec<Station>) -> impl IntoView {
 }
 
 #[server(StationsTable, "/api")]
-pub async fn stations_table(cx: Scope) -> Result<Vec<Station>, ServerFnError> {
+pub async fn get_stations(cx: Scope) -> Result<Vec<Station>, ServerFnError> {
     let pool = pool(cx)?;
-    // let auth = auth(cx)?;
 
-    // let user: User = auth.current_user.ok_or(ServerFnError::ServerError(
-    //     "User not logged in.".to_string(),
-    // ))?;
-
-    // sqlx::query(
-    //     "INSERT INTO stations (name, address, city, phone, hyperlink, amount_a_plus, amount_a_minus, amount_b_plus, amount_b_minus, amount_ab_plus, amount_ab_minus, amount_o_plus, amount_o_minus)
-    //     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    //     .bind("Przykładowa stacja")
-    //     .bind("adres")
-    //     .bind("siti")
-    //     .bind("123456789")
-    //     .bind("przykladowa-stacja.pl")
-    //     .bind(2.0)
-    //     .bind(17.0)
-    //     .bind(2.0)
-    //     .bind(17.0)
-    //     .bind(2.0)
-    //     .bind(17.0)
-    //     .bind(2.0)
-    //     .bind(17.0)
-    //     .execute(&pool)
-    //     .await
-    // .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
-
-    let stations = sqlx::query_as::<_, SqlStations>("SELECT * FROM stations")
+    let stations = sqlx::query_as::<_, SqlStation>("SELECT * FROM stations")
         .fetch_all(&pool)
         .await
         .ok()
@@ -158,7 +125,7 @@ pub async fn stations_table(cx: Scope) -> Result<Vec<Station>, ServerFnError> {
 pub type StationsResource = Resource<(), Option<Vec<Station>>>;
 
 async fn stations_option(cx: Scope) -> Option<Vec<Station>> {
-    stations_table(cx).await.ok()
+    get_stations(cx).await.ok()
 }
 
 #[component]

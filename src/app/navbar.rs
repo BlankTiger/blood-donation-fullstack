@@ -35,6 +35,9 @@ pub fn Navbar(
                                     <li>
                                         <A class="inline-block no-underline hover:text-black font-medium text-lg py-2 px-4 lg:-ml-2" href="/admin">"Dashboard"</A>
                                     </li>
+                                    <li>
+                                        <A class="inline-block no-underline hover:text-black font-medium text-lg py-2 px-4 lg:-ml-2" href="/add-station">"Add station"</A>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>
