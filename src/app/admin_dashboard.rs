@@ -1,6 +1,5 @@
-pub mod stations_table;
 use leptos::*;
-use crate::app::admin_dashboard::stations_table::*;
+use crate::app::stations_table::*;
 
 use super::UserResource;
 
@@ -13,7 +12,7 @@ pub fn AdminDashboard(cx: Scope) -> impl IntoView {
         <Suspense fallback=move || view! { cx, <h1>"fallback"</h1> }>
         {user.read(cx).map(move |user| match user {
             Some(_) => view! {cx,
-                <div class="w-full">
+                <div class="w-full mt-96">
                     <StationsTable />
                 </div>
             },

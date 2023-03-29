@@ -21,7 +21,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::SqlitePool;
         use crate::app::login::AuthSession;
-        use crate::app::admin_dashboard::stations_table::*;
+        use crate::app::stations_table::*;
 
         pub fn pool(cx: Scope) -> Result<SqlitePool, ServerFnError> {
             Ok(use_context::<SqlitePool>(cx)
