@@ -19,12 +19,12 @@ use leptos_router::*;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use sqlx::SqlitePool;
+        use sqlx::MySqlPool;
         use crate::app::login::AuthSession;
         use crate::app::stations_table::*;
 
-        pub fn pool(cx: Scope) -> Result<SqlitePool, ServerFnError> {
-            Ok(use_context::<SqlitePool>(cx)
+        pub fn pool(cx: Scope) -> Result<MySqlPool, ServerFnError> {
+            Ok(use_context::<MySqlPool>(cx)
                 .ok_or("Pool missing.")
                 .map_err(|e| ServerFnError::ServerError(e.to_string()))?)
         }
@@ -122,7 +122,7 @@ pub fn Signup(cx: Scope, action: Action<Signup, Result<(), ServerFnError>>) -> i
             <h1>"Sign Up"</h1>
             <label>
                 "User ID:"
-                <input type="text" placeholder="User ID" maxlength="32" name="username" class="auth-input" />
+                <input type="text" placeholder="User ID" maxlength="32" name="email" class="auth-input" />
             </label>
             <br/>
             <label>

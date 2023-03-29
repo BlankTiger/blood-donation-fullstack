@@ -7,11 +7,11 @@ use serde::{Deserialize, Serialize};
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use sqlx::SqlitePool;
-    use axum_sessions_auth::{SessionSqlitePool, Authentication, HasPermission};
+    use sqlx::MySqlPool;
+    use axum_sessions_auth::{SessionMySqlPool, Authentication, HasPermission};
     use bcrypt::{hash, verify, DEFAULT_COST};
     use crate::app::{pool, auth};
-    pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionSqlitePool, SqlitePool>;
+    pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionMySqlPool, MySqlPool>;
 }}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -33,23 +33,12 @@ impl Default for User {
     }
 }
 
-pub trait IsAdmin {
-    fn is_admin(&self) -> bool;
-}
-
-impl IsAdmin for User {
-    fn is_admin(&self) -> bool {
-        self.email == "yourstara"
-        // self.permissions.contains("admin")
-    }
-}
-
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use async_trait::async_trait;
 
     impl User {
-        pub async fn get(id: i64, pool: &SqlitePool) -> Option<Self> {
+        pub async fn get(id: i64, pool: &MySqlPool) -> Option<Self> {
             let sqluser = sqlx::query_as::<_, SqlUser>("SELECT * FROM users WHERE id = ?")
                 .bind(id)
                 .fetch_one(pool)
@@ -57,8 +46,8 @@ if #[cfg(feature = "ssr")] {
                 .ok()?;
 
             //lets just get all the tokens the user can use, we will only use the full permissions if modifing them.
-            let sql_user_perms = sqlx::query_as::<_, SqlPermissionTokens>(
-                "SELECT token FROM user_permissions WHERE user_id = ?;",
+            let sql_user_perms = sqlx::query_as::<_, SqlPermissions>(
+                "SELECT permission FROM user_permissions WHERE user_id = ?;",
             )
             .bind(id)
             .fetch_all(pool)
@@ -68,16 +57,16 @@ if #[cfg(feature = "ssr")] {
             Some(sqluser.into_user(Some(sql_user_perms)))
         }
 
-        pub async fn get_from_username(name: String, pool: &SqlitePool) -> Option<Self> {
-            let sqluser = sqlx::query_as::<_, SqlUser>("SELECT * FROM users WHERE username = ?")
-                .bind(name)
+        pub async fn get_from_email(email: String, pool: &MySqlPool) -> Option<Self> {
+            let sqluser = sqlx::query_as::<_, SqlUser>("SELECT * FROM users WHERE email = ?")
+                .bind(email)
                 .fetch_one(pool)
                 .await
                 .ok()?;
 
             //lets just get all the tokens the user can use, we will only use the full permissions if modifing them.
-            let sql_user_perms = sqlx::query_as::<_, SqlPermissionTokens>(
-                "SELECT token FROM user_permissions WHERE user_id = ?;",
+            let sql_user_perms = sqlx::query_as::<_, SqlPermissions>(
+                "SELECT permission FROM user_permissions WHERE user_id = ?;",
             )
             .bind(sqluser.id)
             .fetch_all(pool)
@@ -89,13 +78,13 @@ if #[cfg(feature = "ssr")] {
     }
 
     #[derive(sqlx::FromRow, Clone)]
-    pub struct SqlPermissionTokens {
-        pub token: String,
+    pub struct SqlPermissions {
+        pub permission: String,
     }
 
     #[async_trait]
-    impl Authentication<User, i64, SqlitePool> for User {
-        async fn load_user(userid: i64, pool: Option<&SqlitePool>) -> Result<User, anyhow::Error> {
+    impl Authentication<User, i64, MySqlPool> for User {
+        async fn load_user(userid: i64, pool: Option<&MySqlPool>) -> Result<User, anyhow::Error> {
             let pool = pool.unwrap();
 
             User::get(userid, pool)
@@ -112,13 +101,13 @@ if #[cfg(feature = "ssr")] {
         }
 
         fn is_anonymous(&self) -> bool {
-            false
+            self.username == "Guest"
         }
     }
 
     #[async_trait]
-    impl HasPermission<SqlitePool> for User {
-        async fn has(&self, perm: &str, _pool: &Option<&SqlitePool>) -> bool {
+    impl HasPermission<MySqlPool> for User {
+        async fn has(&self, perm: &str, _pool: &Option<&MySqlPool>) -> bool {
             self.permissions.contains(perm)
         }
     }
@@ -126,20 +115,20 @@ if #[cfg(feature = "ssr")] {
     #[derive(sqlx::FromRow, Clone)]
     pub struct SqlUser {
         pub id: i64,
-        pub username: String,
+        pub email: String,
         pub password: String,
     }
 
     impl SqlUser {
-        pub fn into_user(self, sql_user_perms: Option<Vec<SqlPermissionTokens>>) -> User {
+        pub fn into_user(self, sql_user_perms: Option<Vec<SqlPermissions>>) -> User {
             User {
                 id: self.id,
-                email: self.username,
+                email: self.email,
                 password: self.password,
                 permissions: if let Some(user_perms) = sql_user_perms {
                     user_perms
                         .into_iter()
-                        .map(|x| x.token)
+                        .map(|x| x.permission)
                         .collect::<HashSet<String>>()
                 } else {
                     HashSet::<String>::new()
@@ -160,7 +149,7 @@ pub async fn get_user(cx: Scope) -> Result<Option<User>, ServerFnError> {
 #[server(Signup, "/api")]
 pub async fn signup(
     cx: Scope,
-    username: String,
+    email: String,
     password: String,
     password_confirmation: String,
     remember: Option<String>,
@@ -176,14 +165,14 @@ pub async fn signup(
 
     let password_hashed = hash(password, DEFAULT_COST).unwrap();
 
-    sqlx::query("INSERT INTO users (username, password) VALUES (?,?)")
-        .bind(username.clone())
+    sqlx::query("INSERT INTO users (email, password) VALUES (?,?)")
+        .bind(email.clone())
         .bind(password_hashed)
         .execute(&pool)
         .await
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
 
-    let user = User::get_from_username(username, &pool)
+    let user = User::get_from_email(email, &pool)
         .await
         .ok_or("Signup failed: User does not exist.")
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;

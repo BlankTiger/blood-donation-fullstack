@@ -24,7 +24,7 @@
             ];
             buildInputs = [
               trunk
-              sqlite
+              mysql
               sass
               openssl
               (rust-bin.nightly.latest.default.override {

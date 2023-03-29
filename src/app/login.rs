@@ -4,28 +4,29 @@ use leptos_router::*;
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use sqlx::SqlitePool;
-    use axum_sessions_auth::{SessionSqlitePool, Authentication, HasPermission};
+    use sqlx::MySqlPool;
+    use axum_sessions_auth::{SessionMySqlPool, Authentication, HasPermission};
     use bcrypt::{hash, verify, DEFAULT_COST};
     use crate::app::{pool, auth};
     use crate::auth::User;
-    pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionSqlitePool, SqlitePool>;
+    pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionMySqlPool, MySqlPool>;
 }}
 
 #[server(Login, "/api")]
 pub async fn login(
     cx: Scope,
-    username: String,
+    email: String,
     password: String,
     remember: Option<String>,
 ) -> Result<(), ServerFnError> {
     let pool = pool(cx)?;
     let auth = auth(cx)?;
 
-    let user: User = User::get_from_username(username, &pool)
+    let user: User = User::get_from_email(email, &pool)
         .await
         .ok_or("User does not exist.")
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
+    dbg!(&user.permissions);
 
     match verify(password, &user.password).map_err(|e| ServerFnError::ServerError(e.to_string()))? {
         true => {
@@ -58,7 +59,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                             <h1 class="text-3xl font-bold text-center mb-4 cursor-pointer">"Stacja krwiodawstwa"</h1>
                         </div>
                         <div class="space-y-4">
-                            <input type="text" placeholder="Email Addres" name="username"
+                            <input type="text" placeholder="Email Addres" name="email"
                                 class="block text-sm py-3 px-4 rounded-lg w-full border outline-none" />
                             <input type="password" placeholder="Password" name="password"
                                 class="block text-sm py-3 px-4 rounded-lg w-full border outline-none appearance-none" />
