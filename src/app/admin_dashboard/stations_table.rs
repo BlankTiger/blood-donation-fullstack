@@ -88,7 +88,9 @@ pub struct Station {
     available_blood: AvailableBlood,
 }
 
-fn stations_to_rows(cx: Scope, stations: Signal<Vec<Station>>) -> impl IntoView {
+fn stations_to_rows(cx: Scope, stations: Vec<Station>) -> impl IntoView {
+    let stations = move || stations.clone();
+
     view! {
         cx,
         <tbody class="divide-y divide-gray-200">
@@ -158,25 +160,21 @@ pub async fn stations_table(cx: Scope) -> Result<Vec<Station>, ServerFnError> {
     Ok(stations)
 }
 
+pub type StationsResource = Resource<Option<Vec<Station>>, Option<Vec<Station>>>;
+
+async fn stations_option(cx: Scope) -> Option<Vec<Station>> {
+    stations_table(cx).await.ok()
+}
+
 #[component]
 pub fn StationsTable(cx: Scope) -> impl IntoView {
-    let (stations, set_stations) = create_signal::<Vec<Station>>(cx, vec![]);
-    let stations = create_resource(cx, move || stations, move |_| stations_table(cx));
-
-    let stations_signal = Signal::derive(cx, move || {
-        if let Some(Ok(stations)) = stations.read(cx) {
-            stations
-        } else {
-            vec![]
-        }
-    });
+    let stations: StationsResource = create_resource(cx, || None, move |_| stations_option(cx));
 
     view! {
         cx,
         <h1 class="text-black text-4xl pt-20 px-20 text-center">"Zarejestrowane stacje krwiodawstwa"</h1>
         <div class="flex justify-center">
             <div class="overflow-x-auto flex justify-center w-full border-gray-400 border-2 rounded-2xl mx-40 my-10">
-                <Suspense fallback=move || {view! {cx, <h1 class="text-center">"Loading..."</h1>}}>
                 <table class="w-full mx-20 my-10 divide-y-2 divide-gray-200 text-sm">
                     <thead>
                         <tr>
@@ -187,23 +185,14 @@ pub fn StationsTable(cx: Scope) -> impl IntoView {
                             <th class="px-4 py-2"></th>
                         </tr>
                     </thead>
-                    {stations_to_rows(cx, stations_signal).into_view(cx)}
+                <Transition fallback=move || {view! {cx, <></>}}>
+                    {stations.read(cx).map(|stations| match stations {
+                            Some(stations) => stations_to_rows(cx, stations).into_view(cx),
+                            None => view! {cx, <h1 class="text-center">"Loading.."</h1>}.into_view(cx)
+                    }).into_view(cx)}
+                </Transition>
                 </table>
-                </Suspense>
             </div>
         </div>
     }
-
-    // <tbody class="divide-y divide-gray-200">
-    //     <tr>
-    //         <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">"RCKiK przykład"</td>
-    //         <td class="whitespace-nowrap px-4 py-2 text-gray-700">"ul. Wazów 42"</td>
-    //         <td class="whitespace-nowrap px-4 py-2 text-gray-700">"65-046 Zielona Góra"</td>
-    //         <td class="whitespace-nowrap px-4 py-2 text-gray-700">"tel. (68) 329 83 60"</td>
-    //         <td class="whitespace-nowrap px-4 py-2">
-    //             <A href="przykladowa-stacja.html"
-    //                 class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">"Zobacz"</A>
-    //         </td>
-    //     </tr>
-    // </tbody>
 }

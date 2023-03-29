@@ -1,15 +1,15 @@
+mod admin_dashboard;
 mod home;
 mod login;
 mod logout;
 mod navbar;
 mod overview;
 mod stations_table;
-mod admin_dashboard;
+use crate::app::admin_dashboard::*;
 use crate::app::home::*;
 use crate::app::login::*;
 use crate::app::logout::Logout;
 use crate::app::navbar::*;
-use crate::app::admin_dashboard::*;
 use crate::auth::*;
 use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
 use cfg_if::cfg_if;
@@ -45,71 +45,72 @@ cfg_if! {
     }
 }
 
+pub type UserResource = Resource<(usize, usize, usize), Option<User>>;
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     let login = create_server_action::<Login>(cx);
     let logout = create_server_action::<Logout>(cx);
     let signup = create_server_action::<Signup>(cx);
 
-    let user = create_resource(
+    let get_curr_user = move |cx| async move { get_user(cx).await.ok().unwrap_or(None) };
+
+    let user: UserResource = create_resource(
         cx,
-        move || (login.version().get(), logout.version().get()),
-        move |_| get_user(cx),
+        move || {
+            (
+                login.version().get(),
+                logout.version().get(),
+                signup.version().get(),
+            )
+        },
+        move |_| get_curr_user(cx),
     );
 
-    let user_signal = Signal::derive(cx, move || {
-        if let Some(Ok(user)) = user.read(cx) {
-            user
-        } else {
-            None
-        }
-    });
-
     provide_meta_context(cx);
+    provide_context(cx, user);
 
     view! {
         cx,
         <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
         <Stylesheet id="leptos" href="/pkg/session_auth_axum.css"/>
-        <Suspense fallback=move || view!{cx, <h1>{"Loading..."}</h1>}>
-            <Router>
-                <Navbar logged_in_user={user_signal} logout_action={logout} />
-                <main class="w-screen h-screen flex items-center">
-                    <Routes>
-                        <Route path="" view=move |cx| view! {
-                                cx,
-                                <ErrorBoundary fallback=move |cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
-                                    <Home logged_in_user={user_signal} />
-                                </ErrorBoundary>
-                        }/> //Route
-                        <Route path="admin" view=move |cx| {
-                            view! {
-                                cx,
-                                <AdminDashboard user={user_signal} />
-                            }
-                        }/>
-                        <Route path="login" view=move |cx| {
-                            view! {
-                                cx,
-                                <Login action=login />
-                            }
-                        }/>
-                        <Route path="signup" view=move |cx| {
-                            view! {
-                                cx,
-                                <Signup action=signup />
-                            }
-                        }/>
-                        <Route path="logout" view=move |cx| {
-                            view! {
-                                cx,
-                                <h1>"Logging out..."</h1>
-                            }
-                        }/>
-                    </Routes>
-                </main>
-            </Router>
-        </Suspense>
+        <Router>
+            <Navbar logout_action={logout} />
+            <main class="w-screen h-screen flex items-center">
+                <Routes>
+                    <Route path="" view=move |cx| view! {
+                            cx,
+                            <ErrorBoundary fallback=move |cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
+                                <Home />
+                            </ErrorBoundary>
+                    }/> //Route
+                    <Route path="admin" view=move |cx| {
+                        view! {
+                            cx,
+                            <AdminDashboard />
+                        }
+                    }/>
+                    <Route path="login" view=move |cx| {
+                        view! {
+                            cx,
+                            <Login action=login />
+                        }
+                    }/>
+                    <Route path="signup" view=move |cx| {
+                        view! {
+                            cx,
+                            <Signup action=signup />
+                        }
+                    }/>
+                    <Route path="logout" view=move |cx| {
+                        view! {
+                            cx,
+                            <h1>"Logging out..."</h1>
+                        }
+                    }/>
+                </Routes>
+            </main>
+        </Router>
     }
 }
 
