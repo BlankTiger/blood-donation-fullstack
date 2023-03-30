@@ -2,19 +2,19 @@ use leptos::*;
 
 #[component]
 pub fn Overview(cx: Scope) -> impl IntoView {
-    view! {
-        cx,
+    view! { cx,
         <section>
             <div class="mx-auto max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
                 <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
                     <div class="relative h-64 overflow-hidden rounded-lg sm:h-80 lg:order-last lg:h-full">
-                        <img alt="blood donation hero image" src="/blood_donation_2.jpg"
-                            class="absolute inset-0 h-full w-full object-cover" />
+                        <img
+                            alt="blood donation hero image"
+                            src="/blood_donation_2.jpg"
+                            class="absolute inset-0 h-full w-full object-cover"
+                        />
                     </div>
-
                     <div class="lg:py-24">
                         <h2 class="text-3xl font-bold sm:text-4xl">"Gdzie można oddać krew?"</h2>
-
                         <p class="mt-4 text-gray-600 text-justify">
                             "W Polsce pobór krwi jest zarezerwowany tylko dla placówek wchodzących w skład Publicznej Służby
                             Krwi. Do pobierania krwi i oddzielania jej składników uprawnione są wyłącznie: Regionalne Centra
@@ -27,7 +27,6 @@ pub fn Overview(cx: Scope) -> impl IntoView {
                             zaznaczone zostały tylko stałe punkty poboru krwi. Natomiast harmonogramy akcji wyjazdowych
                             zamieściliśmy na samym dole strony."
                         </p>
-
                     </div>
                 </div>
             </div>

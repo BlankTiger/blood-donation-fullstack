@@ -6,12 +6,16 @@ mod navbar;
 mod overview;
 mod stations_table;
 mod add_station;
+mod update_available_blood;
+mod station_page;
 use crate::app::admin_dashboard::*;
 use crate::app::home::*;
 use crate::app::login::*;
 use crate::app::logout::Logout;
 use crate::app::navbar::*;
 use crate::app::add_station::*;
+use crate::app::update_available_blood::*;
+use crate::app::station_page::*;
 use crate::auth::*;
 use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
 use cfg_if::cfg_if;
@@ -42,8 +46,11 @@ cfg_if! {
             _ = Logout::register();
             _ = Signup::register();
             _ = GetUser::register();
+            _ = StationData::register();
             _ = StationsTable::register();
             _ = AddStation::register();
+            _ = DeleteStation::register();
+            _ = UpdateAvailableBlood::register();
         }
     }
 }
@@ -73,44 +80,67 @@ pub fn App(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
     provide_context(cx, user);
 
-    view! {
-        cx,
+    view! { cx,
         <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
         <Stylesheet id="leptos" href="/pkg/session_auth_axum.css"/>
         <Router>
-            <Navbar logout_action={logout} />
+            <Navbar logout_action=logout/>
             <main class="w-screen h-screen flex items-center">
                 <Routes>
-                    <Route path="" view=move |cx| view! { cx,
-                            <ErrorBoundary fallback=move |cx, errors| view!{cx, <ErrorTemplate errors=errors/>}>
-                                <Home />
-                            </ErrorBoundary>
-                    }/> //Route
-                    <Route path="admin" view=move |cx| {
-                        view! { cx,
-                            <AdminDashboard />
+                    <Route
+                        path=""
+                        view=move |cx| {
+                            view! { cx,
+                                <ErrorBoundary fallback=move |cx, errors| {
+                                    view! { cx, <ErrorTemplate errors=errors/> }
+                                }>
+                                    <Home/>
+                                </ErrorBoundary>
+                            }
                         }
-                    }/>
-                    <Route path="add-station" view=move |cx| {
-                        view! { cx,
-                            <AddStation />
+                    />
+                    <Route
+                        path="admin"
+                        view=move |cx| {
+                            view! { cx, <AdminDashboard/> }
                         }
-                    }/>
-                    <Route path="login" view=move |cx| {
-                        view! { cx,
-                            <Login action=login />
+                    />
+                    <Route
+                        path="add-station"
+                        view=move |cx| {
+                            view! { cx, <AddStation/> }
                         }
-                    }/>
-                    <Route path="signup" view=move |cx| {
-                        view! { cx,
-                            <Signup action=signup />
+                    />
+                    <Route
+                        path="update-available-blood"
+                        view=move |cx| {
+                            view! { cx, <UpdateAvailableBlood/> }
                         }
-                    }/>
-                    <Route path="logout" view=move |cx| {
-                        view! { cx,
-                            <h1>"Logging out..."</h1>
+                    />
+                    <Route
+                        path="station/:id"
+                        view=move |cx| {
+                            view! { cx, <StationPage/> }
                         }
-                    }/>
+                    />
+                    <Route
+                        path="login"
+                        view=move |cx| {
+                            view! { cx, <Login action=login/> }
+                        }
+                    />
+                    <Route
+                        path="signup"
+                        view=move |cx| {
+                            view! { cx, <Signup action=signup/> }
+                        }
+                    />
+                    <Route
+                        path="logout"
+                        view=move |cx| {
+                            view! { cx, <h1>"Logging out..."</h1> }
+                        }
+                    />
                 </Routes>
             </main>
         </Router>
@@ -119,32 +149,42 @@ pub fn App(cx: Scope) -> impl IntoView {
 
 #[component]
 pub fn Signup(cx: Scope, action: Action<Signup, Result<(), ServerFnError>>) -> impl IntoView {
-    view! {
-        cx,
+    view! { cx,
         <ActionForm action=action>
             <h1>"Sign Up"</h1>
             <label>
                 "User ID:"
-                <input type="text" placeholder="User ID" maxlength="32" name="email" class="auth-input" />
+                <input
+                    type="text"
+                    placeholder="User ID"
+                    maxlength="32"
+                    name="email"
+                    class="auth-input"
+                />
             </label>
             <br/>
             <label>
                 "Password:"
-                <input type="password" placeholder="Password" name="password" class="auth-input" />
+                <input type="password" placeholder="Password" name="password" class="auth-input"/>
             </label>
             <br/>
             <label>
                 "Confirm Password:"
-                <input type="password" placeholder="Password again" name="password_confirmation" class="auth-input" />
+                <input
+                    type="password"
+                    placeholder="Password again"
+                    name="password_confirmation"
+                    class="auth-input"
+                />
             </label>
             <br/>
             <label>
-                "Remember me?"
-                <input type="checkbox" name="remember" class="auth-input" />
+                "Remember me?" <input type="checkbox" name="remember" class="auth-input"/>
             </label>
-
             <br/>
-            <button type="submit" class="button">"Sign Up"</button>
+            <button type="submit" class="button">
+                "Sign Up"
+            </button>
         </ActionForm>
     }
 }

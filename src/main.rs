@@ -1,6 +1,7 @@
 use cfg_if::cfg_if;
 
-// boilerplate to run in different modes
+// TODO: change title meta tag in all pages
+
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use axum::{

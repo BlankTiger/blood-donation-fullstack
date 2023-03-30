@@ -12,7 +12,11 @@ if #[cfg(feature = "ssr")] {
 
 #[component]
 pub fn AddStation(cx: Scope) -> impl IntoView {
-    view! { cx, <AuthGuard view=move || view! {cx, <Authorized /> } /> }
+    view! { cx,
+        <AuthGuard view=move || {
+            view! { cx, <Authorized/> }
+        }/>
+    }
 }
 
 #[component]
@@ -23,40 +27,63 @@ fn Authorized(cx: Scope) -> impl IntoView {
         <section class="w-full h-full bg-gray-100">
             <div class="mx-auto max-w-screen-xl bg-gray-100">
                 <div class="flex justify-center bg-gray-100">
-
                     <div class="w-1/2 mt-24 rounded-lg bg-white p-8 shadow-lg lg:p-12">
                         <h1 class="text-black text-4xl text-center">"Dodaj stację RCKiK"</h1>
-                        <img class="my-10 rounded-2xl" src="blood_donation.jpg" />
+                        <img class="my-10 rounded-2xl" src="blood_donation.jpg"/>
                         <ActionForm action=add_station class="space-y-4">
                             <div>
-                                <label class="sr-only" for="name">"Nazwa"</label>
-                                <input class="w-full rounded-lg border-gray-200 p-3 text-sm" placeholder="Nazwa RCKiK"
-                                    type="text" name="name" />
+                                <label class="sr-only" for="name">
+                                    "Nazwa"
+                                </label>
+                                <input
+                                    class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                    placeholder="Nazwa RCKiK"
+                                    type="text"
+                                    name="name"
+                                />
                             </div>
-
                             <div>
-                                <label class="sr-only" for="address">"Adres"</label>
-                                <input class="w-full rounded-lg border-gray-200 p-3 text-sm" placeholder="Adres" type="text"
-                                    name="address" />
+                                <label class="sr-only" for="address">
+                                    "Adres"
+                                </label>
+                                <input
+                                    class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                    placeholder="Adres"
+                                    type="text"
+                                    name="address"
+                                />
                             </div>
-
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label class="sr-only" for="city">"Miasto"</label>
-                                    <input class="w-full rounded-lg border-gray-200 p-3 text-sm" placeholder="Miejscowość"
-                                        type="text" name="city" />
+                                    <label class="sr-only" for="city">
+                                        "Miasto"
+                                    </label>
+                                    <input
+                                        class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                        placeholder="Miejscowość"
+                                        type="text"
+                                        name="city"
+                                    />
                                 </div>
-
                                 <div>
-                                    <label class="sr-only" for="phone">"Telefon"</label>
-                                    <input class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                        placeholder="Numer telefonu" type="tel" name="phone" />
+                                    <label class="sr-only" for="phone">
+                                        "Telefon"
+                                    </label>
+                                    <input
+                                        class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                        placeholder="Numer telefonu"
+                                        type="tel"
+                                        name="phone"
+                                    />
                                 </div>
                             </div>
-
                             <div class="mt-4 flex justify-center">
-                                <button type="submit"
-                                    class="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto">"Dodaj stację"</button>
+                                <button
+                                    type="submit"
+                                    class="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
+                                >
+                                    "Dodaj stację"
+                                </button>
                             </div>
                         </ActionForm>
                     </div>
@@ -76,7 +103,6 @@ pub async fn add_station(
 ) -> Result<(), ServerFnError> {
     let pool = pool(cx)?;
     let auth = auth(cx)?;
-    dbg!(&name, &address, &city, &phone);
 
     auth.current_user.ok_or(ServerFnError::ServerError(
         "User not logged in.".to_string(),

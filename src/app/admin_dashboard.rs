@@ -6,9 +6,13 @@ use leptos::*;
 
 #[component]
 pub fn AdminDashboard(cx: Scope) -> impl IntoView {
-    view! { cx, <AuthGuard view=move || view! {cx,
+    view! { cx,
+        <AuthGuard view=move || {
+            view! { cx,
                 <div class="w-full">
-                    <StationsTable />
+                    <StationsTable/>
                 </div>
-    } />}
+            }
+        }/>
+    }
 }

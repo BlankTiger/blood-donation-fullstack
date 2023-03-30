@@ -107,6 +107,12 @@ if #[cfg(feature = "ssr")] {
         }
     }
 
+    impl User {
+        pub fn is_admin(&self) -> bool {
+            self.permissions.contains("admin")
+        }
+    }
+
     #[async_trait]
     impl HasPermission<MySqlPool> for User {
         async fn has(&self, perm: &str, _pool: &Option<&MySqlPool>) -> bool {
@@ -196,11 +202,41 @@ where
     let user = use_context::<UserResource>(cx).expect("userresource to be provided");
 
     view! { cx,
-        <Suspense fallback=move || view! {cx, <div>"Loading..."</div>}>
-        {user.read(cx).map(|user| match user {
-            Some(_) => view().into_view(cx),
-            None => view! {cx, <Unauthorized />}.into_view(cx)
-        })}
+        <Suspense fallback=move || {
+            view! { cx, <div>"Loading..."</div> }
+        }>
+            {user
+                .read(cx)
+                .map(|user| match user {
+                    Some(_) => view().into_view(cx),
+                    None => {
+                        view! { cx, <Unauthorized/> }
+                            .into_view(cx)
+                    }
+                })}
+        </Suspense>
+    }
+}
+
+#[component]
+pub fn AuthGuardTwoViews<F, G, IV>(cx: Scope, view_authed: F, view_unauthed: G) -> impl IntoView
+where
+    F: Fn() -> IV + 'static,
+    G: Fn() -> IV + 'static,
+    IV: IntoView,
+{
+    let user = use_context::<UserResource>(cx).expect("userresource to be provided");
+
+    view! { cx,
+        <Suspense fallback=move || {
+            view! { cx, <div>"Loading..."</div> }
+        }>
+            {user
+                .read(cx)
+                .map(|user| match user {
+                    Some(_) => view_authed().into_view(cx),
+                    None => view_unauthed().into_view(cx),
+                })}
         </Suspense>
     }
 }
