@@ -2,8 +2,6 @@ use crate::app::stations_table::get_station_data_option;
 use leptos::*;
 use leptos_router::*;
 
-static HUNDRED_PERCENT: f32 = 100.0;
-
 #[component]
 pub fn StationPage(cx: Scope) -> impl IntoView {
     let params = use_params_map(cx);
@@ -99,6 +97,13 @@ fn BloodCard(cx: Scope, title: String, value: f32) -> impl IntoView {
     view! { cx,
         <div class="w-full md:w-1/4 xl:w-1/8">
             <div class="rounded-2xl bg-white overflow-hidden hover:shadow-lg transition-all delay-75">
+                <div class="pt-1 text-center bg-gray-200">
+                    <h3>
+                        <p class="font-semibold text-dark text-xl sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px] mb-4 block hover:text-primary ">
+                            {format!("{} / 100 l", value as i32)}
+                        </p>
+                    </h3>
+                </div>
                 <svg
                     class="py-10"
                     version="1.1"

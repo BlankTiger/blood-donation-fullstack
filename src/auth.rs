@@ -171,6 +171,7 @@ pub async fn signup(
         ));
     }
 
+    // TODO: change to argon2
     let password_hashed = hash(password, DEFAULT_COST).unwrap();
 
     sqlx::query("INSERT INTO users (email, password) VALUES (?,?)")

@@ -1,6 +1,11 @@
 use cfg_if::cfg_if;
 
 // TODO: change title meta tag in all pages
+// TODO: change project information
+// TODO: change logging strategy to eyre
+// TODO: add a favicon
+// TODO: maybe add map
+// TODO: refactor
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {

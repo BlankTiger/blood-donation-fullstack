@@ -231,10 +231,10 @@ fn StationsTableAuthed(cx: Scope) -> impl IntoView {
                                 "telefon"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "link"
+                                ""
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "usuń"
+                                ""
                             </th>
                             <th class="px-4 py-2"></th>
                         </tr>
@@ -316,7 +316,7 @@ fn StationsTableUnauthed(cx: Scope) -> impl IntoView {
                                 "telefon"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "link"
+                                ""
                             </th>
                             <th class="px-4 py-2"></th>
                         </tr>
