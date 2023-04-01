@@ -1,6 +1,6 @@
-# Leptos Authenticated Todo App Sqlite with Axum
+# Fullstack Rust application with Leptos, Axum, Tailwind and SQLx
 
-This example creates a basic todo app with an Axum backend that uses Leptos' server functions to call sqlx from the client and seamlessly run it on the server. It lets you login, signup, and submit todos as different users, or a guest.
+This project is a fullstack application built with Rust. It's a simple CRUD application for managing a list of blood donation sites.
 
 ## Client Side Rendering
 This example cannot be built as a trunk standalone CSR-only app. Only the server may directly connect to the database.

@@ -1,12 +1,15 @@
 use cfg_if::cfg_if;
 
-// TODO: change project information
 // TODO: change logging strategy to eyre
 // TODO: maybe add map
 // TODO: refactor
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
+    use krwiodawstwo_fullstack::app::*;
+    use krwiodawstwo_fullstack::auth::*;
+    use krwiodawstwo_fullstack::*;
+    use krwiodawstwo_fullstack::fallback::file_and_error_handler;
     use axum::{
         response::{Response, IntoResponse},
         routing::{post, get},
@@ -15,18 +18,14 @@ if #[cfg(feature = "ssr")] {
         body::Body as AxumBody,
         Router,
     };
-    use dotenvy::dotenv;
-    use std::env;
-    use session_auth_axum::app::*;
-    use session_auth_axum::auth::*;
-    use session_auth_axum::*;
-    use session_auth_axum::fallback::file_and_error_handler;
-    use leptos_axum::{generate_route_list, LeptosRoutes, handle_server_fns_with_context};
-    use leptos::{log, view, provide_context, LeptosOptions, get_configuration};
-    use std::sync::Arc;
-    use sqlx::{MySqlPool, mysql::MySqlPoolOptions};
-    use axum_database_sessions::{SessionConfig, SessionLayer, SessionStore};
     use axum_sessions_auth::{AuthSessionLayer, AuthConfig, SessionMySqlPool};
+    use axum_database_sessions::{SessionConfig, SessionLayer, SessionStore};
+    use leptos::{log, view, provide_context, LeptosOptions, get_configuration};
+    use leptos_axum::{generate_route_list, LeptosRoutes, handle_server_fns_with_context};
+    use sqlx::{MySqlPool, mysql::MySqlPoolOptions};
+    use dotenvy::dotenv;
+    use std::sync::Arc;
+    use std::env;
 
     async fn server_fn_handler(Extension(pool): Extension<MySqlPool>, auth_session: AuthSession, path: Path<String>, headers: HeaderMap, request: Request<AxumBody>) -> impl IntoResponse {
 

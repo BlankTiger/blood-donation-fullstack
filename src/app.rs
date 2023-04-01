@@ -83,7 +83,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 
     view! { cx,
         <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-        <Stylesheet id="leptos" href="/pkg/session_auth_axum.css"/>
+        <Stylesheet id="leptos" href="/pkg/krwiodawstwo-fullstack.css"/>
         <Router>
             <Navbar logout_action=logout/>
             <main class="w-screen h-screen flex items-center">
