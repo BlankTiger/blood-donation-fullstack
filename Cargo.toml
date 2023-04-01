@@ -9,7 +9,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 anyhow = "1.0.66"
 console_log = "1.0.0"
-rand = { version = "0.8.5", features = ["min_const_gen"], optional = true }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.25"
 cfg-if = "1.0.0"
@@ -51,7 +50,7 @@ async-trait = { version = "0.1.64", optional = true }
 default = ["csr"]
 csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
-ssr = ["dep:axum", "dep:tower", "dep:tower-http", "dep:tokio", "dep:axum_sessions_auth", "dep:axum_database_sessions", "dep:async-trait", "dep:sqlx", "dep:argon2", "dep:rand", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:dotenvy"]
+ssr = ["dep:axum", "dep:tower", "dep:tower-http", "dep:tokio", "dep:axum_sessions_auth", "dep:axum_database_sessions", "dep:async-trait", "dep:sqlx", "dep:argon2", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:dotenvy"]
 
 [package.metadata.cargo-all-features]
 denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]

@@ -1,7 +1,8 @@
-use leptos::*;
-use cfg_if::cfg_if;
 use crate::auth::AuthGuard;
 use crate::auth::AuthGuardProps;
+use crate::app::notification::*;
+use cfg_if::cfg_if;
+use leptos::*;
 use leptos_router::*;
 
 cfg_if! {
@@ -22,6 +23,7 @@ pub fn AddStation(cx: Scope) -> impl IntoView {
 #[component]
 fn Authorized(cx: Scope) -> impl IntoView {
     let add_station = create_server_action::<AddStation>(cx);
+    let last_result = add_station.value();
 
     view! { cx,
         <section class="w-full h-full bg-gray-100">
@@ -77,6 +79,22 @@ fn Authorized(cx: Scope) -> impl IntoView {
                                     />
                                 </div>
                             </div>
+                            {move || match last_result() {
+                                Some(Ok(_)) => {
+                                    view! { cx, <Notification msg="Stacja dodana!".into() notification_type=NotificationType::Info/> }
+                                        .into_view(cx)
+                                }
+                                Some(Err(e)) => {
+                                    let e_msg = e.to_string();
+                                    let msg = e_msg.split(": ").last().unwrap_or("");
+                                    view! { cx, <Notification msg=format!("Oops! {msg}") notification_type=NotificationType::Error/> }
+                                        .into_view(cx)
+                                }
+                                None => {
+                                    view! { cx, <></> }
+                                        .into_view(cx)
+                                }
+                            }}
                             <div class="mt-4 flex justify-center">
                                 <button
                                     type="submit"
@@ -93,6 +111,7 @@ fn Authorized(cx: Scope) -> impl IntoView {
     }
 }
 
+
 #[server(AddStation, "/api")]
 pub async fn add_station(
     cx: Scope,
@@ -104,8 +123,32 @@ pub async fn add_station(
     let pool = pool(cx)?;
     let auth = auth(cx)?;
 
+    if name.is_empty() {
+        return Err(ServerFnError::ServerError(
+            "Name field is empty.".to_string(),
+        ));
+    }
+
+    if address.is_empty() {
+        return Err(ServerFnError::ServerError(
+            "Address field is empty.".to_string(),
+        ));
+    }
+
+    if city.is_empty() {
+        return Err(ServerFnError::ServerError(
+            "City field is empty.".to_string(),
+        ));
+    }
+
+    if phone.is_empty() {
+        return Err(ServerFnError::ServerError(
+            "Phone field is empty.".to_string(),
+        ));
+    }
+
     auth.current_user.ok_or(ServerFnError::ServerError(
-        "User not logged in.".to_string(),
+        "You are not logged in".to_string(),
     ))?;
 
     sqlx::query(
@@ -121,4 +164,3 @@ pub async fn add_station(
 
     Ok(())
 }
-

@@ -2,6 +2,7 @@ use leptos::*;
 use leptos_router::*;
 use crate::auth::AuthGuard;
 use crate::auth::AuthGuardProps;
+use crate::app::notification::*;
 use cfg_if::cfg_if;
 
 cfg_if! {
@@ -25,6 +26,10 @@ pub async fn update_available_blood(
 ) -> Result<(), ServerFnError> {
     let pool = pool(cx)?;
     let auth = auth(cx)?;
+
+    if amount_a_plus < 0.0 || amount_a_minus < 0.0 || amount_b_plus < 0.0 || amount_b_minus < 0.0 || amount_ab_plus < 0.0 || amount_ab_minus < 0.0 || amount_o_plus < 0.0 || amount_o_minus < 0.0 {
+        return Err(ServerFnError::ServerError("Invalid amount.".to_string()));
+    }
 
     auth.current_user.ok_or(ServerFnError::ServerError(
         "User not logged in.".to_string(),
@@ -60,6 +65,7 @@ pub fn UpdateAvailableBlood(cx: Scope) -> impl IntoView {
 #[component]
 fn Authorized(cx: Scope) -> impl IntoView {
     let update_available_blood = create_server_action::<UpdateAvailableBlood>(cx);
+    let last_result = update_available_blood.value();
 
     view! { cx,
         <section class="w-full bg-gray-100">
@@ -176,6 +182,30 @@ fn Authorized(cx: Scope) -> impl IntoView {
                                     </div>
                                 </div>
                             </div>
+                            {move || match last_result() {
+                                Some(Err(_)) => {
+                                    view! { cx,
+                                        <Notification
+                                            msg="Podano niewłaściwe dane.".into()
+                                            notification_type=NotificationType::Error
+                                        />
+                                    }
+                                        .into_view(cx)
+                                }
+                                Some(Ok(_)) => {
+                                    view! { cx,
+                                        <Notification
+                                            msg="Stan krwi został zaktualizowany.".into()
+                                            notification_type=NotificationType::Info
+                                        />
+                                    }
+                                        .into_view(cx)
+                                }
+                                _ => {
+                                    view! { cx, <></> }
+                                        .into_view(cx)
+                                }
+                            }}
                             <div class="mt-4 flex justify-center">
                                 <button
                                     type="submit"

@@ -1,9 +1,12 @@
+use crate::auth::Login;
 use leptos::*;
 use leptos_router::*;
-use crate::auth::Login;
+use crate::app::notification::*;
 
 #[component]
 pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> impl IntoView {
+    let result_of_login = action.value();
+
     view! { cx,
         <div class="h-full w-full overflow-hidden">
             <div class="min-h-screen bg-purple-400 flex justify-center items-center">
@@ -30,6 +33,23 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                                 class="block text-sm py-3 px-4 rounded-lg w-full border outline-none appearance-none"
                             />
                         </div>
+                        {move || match result_of_login() {
+                            Some(Err(_)) => {
+                                view! { cx,
+                                    <div class="mt-2">
+                                        <Notification
+                                            msg="Niepoprawny login lub hasło".into()
+                                            notification_type=NotificationType::Error
+                                        />
+                                    </div>
+                                }
+                                    .into_view(cx)
+                            }
+                            _ => {
+                                view! { cx, <></> }
+                                    .into_view(cx)
+                            }
+                        }}
                         <label>
                             <input type="checkbox" name="remember" class="auth-input"/>
                             " Zapamiętaj mnie"
