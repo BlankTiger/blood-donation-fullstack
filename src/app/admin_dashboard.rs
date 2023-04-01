@@ -9,6 +9,8 @@ pub fn AdminDashboard(cx: Scope) -> impl IntoView {
     view! { cx,
         <AuthGuard view=move || {
             view! { cx,
+                <title>"Dashboard"</title>
+
                 <div class="w-full">
                     <StationsTable/>
                 </div>

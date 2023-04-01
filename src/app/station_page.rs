@@ -16,11 +16,14 @@ pub fn StationPage(cx: Scope) -> impl IntoView {
             <Transition fallback=move || {
                 view! { cx, <div>"Loading..."</div> }
             }>
+
                 {station
                     .read(cx)
                     .map(|station| match station {
                         Some(station) => {
                             view! { cx,
+                                <title>{&station.name}</title>
+
                                 <h1 class="text-black text-4xl mt-36 px-20 text-center">
                                     {format!("Stan krwi w {}", station.name)}
                                 </h1>
