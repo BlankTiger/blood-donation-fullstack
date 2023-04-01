@@ -26,7 +26,7 @@ use leptos_router::*;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::MySqlPool;
-        use crate::app::login::AuthSession;
+        use crate::auth::AuthSession;
         use crate::app::stations_table::*;
 
         pub fn pool(cx: Scope) -> Result<MySqlPool, ServerFnError> {

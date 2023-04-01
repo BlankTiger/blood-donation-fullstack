@@ -1,45 +1,6 @@
-use cfg_if::cfg_if;
 use leptos::*;
 use leptos_router::*;
-
-cfg_if! {
-if #[cfg(feature = "ssr")] {
-    use sqlx::MySqlPool;
-    use axum_sessions_auth::{SessionMySqlPool, Authentication, HasPermission};
-    use bcrypt::{hash, verify, DEFAULT_COST};
-    use crate::app::{pool, auth};
-    use crate::auth::User;
-    pub type AuthSession = axum_sessions_auth::AuthSession<User, i64, SessionMySqlPool, MySqlPool>;
-}}
-
-#[server(Login, "/api")]
-pub async fn login(
-    cx: Scope,
-    email: String,
-    password: String,
-    remember: Option<String>,
-) -> Result<(), ServerFnError> {
-    let pool = pool(cx)?;
-    let auth = auth(cx)?;
-
-    let user: User = User::get_from_email(email, &pool)
-        .await
-        .ok_or("User does not exist.")
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
-    dbg!(&user.permissions);
-
-    match verify(password, &user.password).map_err(|e| ServerFnError::ServerError(e.to_string()))? {
-        true => {
-            auth.login_user(user.id);
-            auth.remember_user(remember.is_some());
-            leptos_axum::redirect(cx, "/admin");
-            Ok(())
-        }
-        false => Err(ServerFnError::ServerError(
-            "Password does not match.".to_string(),
-        )),
-    }
-}
+use crate::auth::Login;
 
 #[component]
 pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> impl IntoView {

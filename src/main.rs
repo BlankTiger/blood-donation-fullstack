@@ -1,5 +1,6 @@
 use cfg_if::cfg_if;
 
+// TODO: add notifications about errors on pages, especially login
 // TODO: change title meta tag in all pages
 // TODO: change project information
 // TODO: change logging strategy to eyre

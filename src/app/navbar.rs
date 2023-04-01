@@ -1,4 +1,4 @@
-use crate::{app::logout::*, auth::User};
+use crate::app::logout::*;
 use leptos::*;
 use leptos_router::*;
 
