@@ -27,7 +27,6 @@ fn Authorized(cx: Scope) -> impl IntoView {
 
     view! { cx,
         <title>"Dodaj stację"</title>
-
         <section class="w-full h-full bg-gray-100">
             <div class="mx-auto max-w-screen-xl bg-gray-100">
                 <div class="flex justify-center bg-gray-100">

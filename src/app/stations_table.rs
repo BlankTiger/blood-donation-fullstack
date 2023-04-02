@@ -79,7 +79,7 @@ pub struct AvailableBlood {
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Station {
-    id: i32,
+    pub id: i32,
     pub name: String,
     pub address: String,
     pub city: String,
@@ -138,8 +138,27 @@ pub async fn get_stations(cx: Scope) -> Result<Vec<Station>, ServerFnError> {
 
 pub type StationsResource = Resource<(), Option<Vec<Station>>>;
 
-async fn stations_option(cx: Scope) -> Option<Vec<Station>> {
+pub async fn get_stations_option(cx: Scope) -> Option<Vec<Station>> {
     get_stations(cx).await.ok()
+}
+
+#[server(StationsTableQuery, "/api")]
+pub async fn get_stations_query(cx: Scope, query: String) -> Result<Vec<Station>, ServerFnError> {
+    let pool = pool(cx)?;
+
+    let stations = sqlx::query_as::<_, SqlStation>("SELECT * FROM stations WHERE match(name, address, city, phone) against (? in natural language mode)")
+        .bind(query)
+        .fetch_all(&pool)
+        .await
+        .ok()
+        .ok_or(ServerFnError::ServerError("No stations found.".to_string()))?;
+
+    let stations: Vec<Station> = stations.into_iter().map(|station| station.into()).collect();
+    Ok(stations)
+}
+
+pub async fn get_stations_query_option(cx: Scope, query: String) -> Option<Vec<Station>> {
+    get_stations_query(cx, query).await.ok()
 }
 
 #[component]
@@ -204,7 +223,8 @@ fn stations_to_rows_authed(cx: Scope, stations: Vec<Station>) -> impl IntoView {
 
 #[component]
 fn StationsTableAuthed(cx: Scope) -> impl IntoView {
-    let stations: StationsResource = create_resource(cx, move || (), move |_| stations_option(cx));
+    let stations: StationsResource =
+        create_resource(cx, move || (), move |_| get_stations_option(cx));
 
     view! { cx,
         <h1 class="text-black text-4xl pt-20 px-20 text-center">
@@ -292,7 +312,8 @@ fn stations_to_rows_unauthed(cx: Scope, stations: Vec<Station>) -> impl IntoView
 
 #[component]
 fn StationsTableUnauthed(cx: Scope) -> impl IntoView {
-    let stations: StationsResource = create_resource(cx, move || (), move |_| stations_option(cx));
+    let stations: StationsResource =
+        create_resource(cx, move || (), move |_| get_stations_option(cx));
 
     view! { cx,
         <h1 class="text-black text-4xl pt-20 px-20 text-center">

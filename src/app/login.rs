@@ -9,7 +9,6 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
 
     view! { cx,
         <title>"Zaloguj się"</title>
-
         <div class="h-full w-full overflow-hidden">
             <div class="min-h-screen bg-purple-400 flex justify-center items-center">
                 <div class="absolute w-60 h-60 rounded-xl bg-purple-300 -top-42 -left-16 z-0 transform rotate-45 hidden md:block"></div>

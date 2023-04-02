@@ -49,6 +49,7 @@ cfg_if! {
             _ = GetUser::register();
             _ = StationData::register();
             _ = StationsTable::register();
+            _ = StationsTableQuery::register();
             _ = AddStation::register();
             _ = DeleteStation::register();
             _ = UpdateAvailableBlood::register();

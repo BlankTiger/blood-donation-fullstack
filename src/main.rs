@@ -1,5 +1,6 @@
 use cfg_if::cfg_if;
 
+// TODO: add searching
 // TODO: change logging strategy to eyre
 // TODO: maybe add map
 // TODO: refactor

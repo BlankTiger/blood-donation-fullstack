@@ -13,5 +13,5 @@ create table if not exists stations (
 	amount_ab_minus float(10, 2) not null,
 	amount_o_plus float(10, 2) not null,
 	amount_o_minus float(10, 2) not null,
-	fulltext(name, address, city)
+	fulltext(name, address, city, phone)
 );

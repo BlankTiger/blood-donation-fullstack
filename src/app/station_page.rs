@@ -1,4 +1,6 @@
 use crate::app::stations_table::get_station_data_option;
+use crate::auth::AuthGuardTwoViews;
+use crate::auth::AuthGuardTwoViewsProps;
 use leptos::*;
 use leptos_router::*;
 
@@ -16,16 +18,24 @@ pub fn StationPage(cx: Scope) -> impl IntoView {
             <Transition fallback=move || {
                 view! { cx, <div>"Loading..."</div> }
             }>
-
                 {station
                     .read(cx)
                     .map(|station| match station {
                         Some(station) => {
+                            let station_cpy = station.clone();
                             view! { cx,
                                 <title>{&station.name}</title>
-
                                 <h1 class="text-black text-4xl mt-36 px-20 text-center">
-                                    {format!("Stan krwi w {}", station.name)}
+                                    <AuthGuardTwoViews
+                                        view_authed=move || {
+                                            view! { cx, {format!("Stan krwi w {}, id={}", station.name, station.id)} }
+                                                .into_view(cx)
+                                        }
+                                        view_unauthed=move || {
+                                            view! { cx, {format!("Stan krwi w {}", station_cpy.name)} }
+                                                .into_view(cx)
+                                        }
+                                    />
                                 </h1>
                                 <section class="flex justify-center">
                                     <div class="flex flex-col justify-center items-center w-1/2 m-20 p-5">
