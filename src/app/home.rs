@@ -1,5 +1,7 @@
-use crate::app::overview::*;
+mod overview;
+
 use crate::app::stations_table::*;
+use self::overview::*;
 use leptos::*;
 
 #[component]

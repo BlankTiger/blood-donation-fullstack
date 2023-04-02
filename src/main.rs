@@ -1,14 +1,12 @@
 use cfg_if::cfg_if;
 
-// TODO: add searching
-// TODO: change logging strategy to eyre
 // TODO: maybe add map
-// TODO: refactor
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use krwiodawstwo_fullstack::app::*;
+    use krwiodawstwo_fullstack::model::user::User;
     use krwiodawstwo_fullstack::auth::*;
+    use krwiodawstwo_fullstack::app::*;
     use krwiodawstwo_fullstack::*;
     use krwiodawstwo_fullstack::fallback::file_and_error_handler;
     use axum::{
@@ -23,7 +21,7 @@ if #[cfg(feature = "ssr")] {
     use axum_database_sessions::{SessionConfig, SessionLayer, SessionStore};
     use leptos::{log, view, provide_context, LeptosOptions, get_configuration};
     use leptos_axum::{generate_route_list, LeptosRoutes, handle_server_fns_with_context};
-    use sqlx::{MySqlPool, mysql::MySqlPoolOptions};
+    use sqlx::MySqlPool;
     use dotenvy::dotenv;
     use std::sync::Arc;
     use std::env;
@@ -80,7 +78,6 @@ if #[cfg(feature = "ssr")] {
         let addr = leptos_options.site_addr;
         let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
-        // build our application with a route
         let app = Router::new()
             .route("/api/*fn_name", post(server_fn_handler))
             .leptos_routes_with_handler(routes, get(leptos_routes_handler) )
@@ -91,7 +88,7 @@ if #[cfg(feature = "ssr")] {
             .layer(Extension(Arc::new(leptos_options)))
             .layer(Extension(pool));
 
-        // run our app with hyper
+        // run app with hyper
         // `axum::Server` is a re-export of `hyper::Server`
         log!("listening on http://{}", &addr);
         axum::Server::bind(&addr)

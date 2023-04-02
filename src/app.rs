@@ -1,24 +1,21 @@
-mod admin_dashboard;
-mod home;
-mod login;
-mod logout;
-mod navbar;
-mod overview;
-mod stations_table;
 mod add_station;
-mod update_available_blood;
+mod admin_dashboard;
+pub mod auth;
+mod home;
+mod navbar;
+pub mod notification;
 mod station_page;
-mod notification;
-use crate::app::admin_dashboard::*;
-use crate::app::home::*;
-use crate::app::login::*;
-use crate::app::logout::Logout;
-use crate::app::navbar::*;
-use crate::app::add_station::*;
-use crate::app::update_available_blood::*;
-use crate::app::station_page::*;
-use crate::auth::*;
-use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
+mod stations_table;
+mod update_available_blood;
+use crate::{
+    app::{
+        add_station::*, admin_dashboard::*, auth::login::*, auth::logout::*, auth::signup::*,
+        home::*, navbar::*, station_page::*, update_available_blood::*,
+    },
+    auth::*,
+    error_template::{ErrorTemplate, ErrorTemplateProps},
+    model::UserResource,
+};
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
@@ -28,7 +25,8 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::MySqlPool;
         use crate::auth::AuthSession;
-        use crate::app::stations_table::*;
+        use crate::actions::station::*;
+        use crate::actions::blood::*;
 
         pub fn pool(cx: Scope) -> Result<MySqlPool, ServerFnError> {
             Ok(use_context::<MySqlPool>(cx)
@@ -56,8 +54,6 @@ cfg_if! {
         }
     }
 }
-
-pub type UserResource = Resource<(usize, usize, usize), Option<User>>;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -132,61 +128,19 @@ pub fn App(cx: Scope) -> impl IntoView {
                         }
                     />
                     <Route
+                        path="logout"
+                        view=move |cx| {
+                            view! { cx, <Logout action=logout/> }
+                        }
+                    />
+                    <Route
                         path="signup"
                         view=move |cx| {
                             view! { cx, <Signup action=signup/> }
                         }
                     />
-                    <Route
-                        path="logout"
-                        view=move |cx| {
-                            view! { cx, <h1>"Logging out..."</h1> }
-                        }
-                    />
                 </Routes>
             </main>
         </Router>
-    }
-}
-
-#[component]
-pub fn Signup(cx: Scope, action: Action<Signup, Result<(), ServerFnError>>) -> impl IntoView {
-    view! { cx,
-        <ActionForm action=action>
-            <h1>"Sign Up"</h1>
-            <label>
-                "User ID:"
-                <input
-                    type="text"
-                    placeholder="User ID"
-                    maxlength="32"
-                    name="email"
-                    class="auth-input"
-                />
-            </label>
-            <br/>
-            <label>
-                "Password:"
-                <input type="password" placeholder="Password" name="password" class="auth-input"/>
-            </label>
-            <br/>
-            <label>
-                "Confirm Password:"
-                <input
-                    type="password"
-                    placeholder="Password again"
-                    name="password_confirmation"
-                    class="auth-input"
-                />
-            </label>
-            <br/>
-            <label>
-                "Remember me?" <input type="checkbox" name="remember" class="auth-input"/>
-            </label>
-            <br/>
-            <button type="submit" class="button">
-                "Sign Up"
-            </button>
-        </ActionForm>
     }
 }

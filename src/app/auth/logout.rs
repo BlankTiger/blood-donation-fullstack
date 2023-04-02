@@ -1,3 +1,4 @@
+use crate::auth::Logout;
 use leptos::*;
 use leptos_router::*;
 
@@ -15,15 +16,4 @@ pub fn Logout(cx: Scope, action: Action<Logout, Result<(), ServerFnError>>) -> i
             </ActionForm>
         </div>
     }
-}
-
-#[server(Logout, "/api")]
-pub async fn logout(cx: Scope) -> Result<(), ServerFnError> {
-    use crate::app::auth;
-    let auth = auth(cx)?;
-
-    auth.logout_user();
-    leptos_axum::redirect(cx, "/");
-
-    Ok(())
 }

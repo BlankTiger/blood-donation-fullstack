@@ -1,8 +1,6 @@
+use crate::app::auth::auth_guard::*;
 use crate::app::stations_table::*;
-use crate::app::AuthGuard;
-use crate::app::AuthGuardProps;
 use leptos::*;
-
 
 #[component]
 pub fn AdminDashboard(cx: Scope) -> impl IntoView {
