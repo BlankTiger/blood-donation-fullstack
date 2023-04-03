@@ -3,10 +3,11 @@ use cfg_if::cfg_if;
 use leptos::*;
 
 cfg_if! {
-if #[cfg(feature = "ssr")] {
-    use crate::app::{pool, auth};
-    use crate::model::station::SqlStation;
-}}
+    if #[cfg(feature = "ssr")] {
+        use crate::app::{pool, auth};
+        use crate::model::station::SqlStation;
+    }
+}
 
 #[server(AddStation, "/api")]
 pub async fn add_station(
