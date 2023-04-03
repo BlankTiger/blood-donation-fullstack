@@ -37,7 +37,7 @@ fn stations_to_li(cx: Scope, stations: Vec<Station>) -> impl IntoView {
     if stations().is_empty() {
         return view! { cx,
                    <div class="text-center text-gray-500 rounded py-2 border-gray-200 bg-white">
-                       "Brak wyników"
+                       "No stations found.."
                    </div>
                }
         .into_view(cx);

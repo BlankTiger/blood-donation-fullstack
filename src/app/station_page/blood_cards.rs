@@ -5,9 +5,9 @@ use leptos::*;
 #[component]
 pub fn BloodCards(cx: Scope, station: Station, rhd_plus: bool) -> impl IntoView {
     let title = if rhd_plus {
-        "Krew RhD (+) plus"
+        "Blood RhD (+) plus"
     } else {
-        "Krew RhD (-) minus"
+        "Blood RhD (-) minus"
     };
 
     view! { cx,

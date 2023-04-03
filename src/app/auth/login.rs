@@ -8,7 +8,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
     let result_of_login = action.value();
 
     view! { cx,
-        <title>"Zaloguj się"</title>
+        <title>"Log in"</title>
         <div class="h-full w-full overflow-hidden">
             <div class="min-h-screen bg-purple-400 flex justify-center items-center">
                 <div class="absolute w-60 h-60 rounded-xl bg-purple-300 -top-42 -left-16 z-0 transform rotate-45 hidden md:block"></div>
@@ -17,7 +17,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                     <ActionForm action=action>
                         <div>
                             <h1 class="text-3xl font-bold text-center mb-4 cursor-pointer">
-                                "Stacja krwiodawstwa"
+                                "Blood donation app"
                             </h1>
                         </div>
                         <div class="space-y-4">
@@ -39,7 +39,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                                 view! { cx,
                                     <div class="mt-2">
                                         <Notification
-                                            msg="Niepoprawny login lub hasło".into()
+                                            msg="Invalid email or password.".into()
                                             notification_type=NotificationType::Error
                                         />
                                     </div>
@@ -53,7 +53,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                         }}
                         <label>
                             <input type="checkbox" name="remember" class="auth-input"/>
-                            " Zapamiętaj mnie"
+                            " Remember me"
                         </label>
                         <br/>
                         <div class="text-center mt-6">
@@ -61,7 +61,7 @@ pub fn Login(cx: Scope, action: Action<Login, Result<(), ServerFnError>>) -> imp
                                 type="submit"
                                 class="py-3 w-64 text-xl text-white bg-purple-400 rounded-2xl"
                             >
-                                "Zaloguj"
+                                "Log in"
                             </button>
                         </div>
                     </ActionForm>

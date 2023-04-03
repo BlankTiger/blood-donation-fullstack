@@ -11,7 +11,7 @@ pub fn Logout(cx: Scope, action: Action<Logout, Result<(), ServerFnError>>) -> i
                     type="submit"
                     class="bg-blue-600 text-gray-200 p-2 rounded hover:bg-blue-500 hover:text-gray-100"
                 >
-                    "Wyloguj"
+                    "Logout"
                 </button>
             </ActionForm>
         </div>

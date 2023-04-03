@@ -4,11 +4,11 @@ use cfg_if::cfg_if;
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use krwiodawstwo_fullstack::model::user::User;
-    use krwiodawstwo_fullstack::auth::*;
-    use krwiodawstwo_fullstack::app::*;
-    use krwiodawstwo_fullstack::*;
-    use krwiodawstwo_fullstack::fallback::file_and_error_handler;
+    use blood_donation_fullstack::model::user::User;
+    use blood_donation_fullstack::auth::*;
+    use blood_donation_fullstack::app::*;
+    use blood_donation_fullstack::*;
+    use blood_donation_fullstack::fallback::file_and_error_handler;
     use axum::{
         response::{Response, IntoResponse},
         routing::{post, get},

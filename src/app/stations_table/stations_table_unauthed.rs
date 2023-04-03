@@ -11,7 +11,7 @@ pub fn StationsTableUnauthed(cx: Scope) -> impl IntoView {
 
     view! { cx,
         <h1 class="text-black text-4xl pt-20 px-20 text-center">
-            "Zarejestrowane stacje krwiodawstwa"
+            "Registered blood donation stations"
         </h1>
         <div class="flex justify-center">
             <div class="overflow-x-auto flex justify-center w-full border-gray-400 border-2 rounded-2xl mx-40 my-10">
@@ -19,16 +19,16 @@ pub fn StationsTableUnauthed(cx: Scope) -> impl IntoView {
                     <thead>
                         <tr>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "nazwa"
+                                "name"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "adres"
+                                "address"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "miejscowość"
+                                "city"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                "telefon"
+                                "phone"
                             </th>
                             <th class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                                 ""
@@ -76,7 +76,7 @@ fn stations_to_rows_unauthed(cx: Scope, stations: Vec<Station>) -> impl IntoView
                                     class="bg-blue-600 text-gray-200 p-2 rounded hover:bg-blue-500 hover:text-gray-100"
                                     href=format!("/station/{}", station.id)
                                 >
-                                    "Zobacz"
+                                    "View"
                                 </A>
                             </td>
                         </tr>

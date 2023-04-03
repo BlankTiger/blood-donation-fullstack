@@ -52,7 +52,7 @@ pub fn UnauthorizedNavbar(cx: Scope, on_click: Box<dyn FnMut(MouseEvent)>) -> im
                         href="/login"
                         class="bg-blue-600 text-gray-200 p-2 rounded hover:bg-blue-500 hover:text-gray-100"
                     >
-                        "Zaloguj"
+                        "Log in"
                     </A>
                 </div>
             </div>

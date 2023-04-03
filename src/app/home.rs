@@ -7,7 +7,7 @@ use leptos::*;
 #[component]
 pub fn Home(cx: Scope) -> impl IntoView {
     view! { cx,
-        <title>"Gdzie oddać krew?"</title>
+        <title>"Where can I donate blood?"</title>
         <div class="w-full mt-96">
             <Overview/>
             <StationsTable/>

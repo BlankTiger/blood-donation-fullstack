@@ -12,22 +12,22 @@ pub fn Form(cx: Scope) -> impl IntoView {
         <ActionForm action=add_station class="space-y-4">
             <div>
                 <label class="sr-only" for="name">
-                    "Nazwa"
+                    "Name"
                 </label>
                 <input
                     class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                    placeholder="Nazwa RCKiK"
+                    placeholder="Name"
                     type="text"
                     name="name"
                 />
             </div>
             <div>
                 <label class="sr-only" for="address">
-                    "Adres"
+                    "Address"
                 </label>
                 <input
                     class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                    placeholder="Adres"
+                    placeholder="Address"
                     type="text"
                     name="address"
                 />
@@ -35,22 +35,22 @@ pub fn Form(cx: Scope) -> impl IntoView {
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <label class="sr-only" for="city">
-                        "Miasto"
+                        "City"
                     </label>
                     <input
                         class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                        placeholder="Miejscowość"
+                        placeholder="City"
                         type="text"
                         name="city"
                     />
                 </div>
                 <div>
                     <label class="sr-only" for="phone">
-                        "Telefon"
+                        "Phone"
                     </label>
                     <input
                         class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                        placeholder="Numer telefonu"
+                        placeholder="Phone"
                         type="tel"
                         name="phone"
                     />
@@ -58,7 +58,7 @@ pub fn Form(cx: Scope) -> impl IntoView {
             </div>
             {move || match last_result() {
                 Some(Ok(_)) => {
-                    view! { cx, <Notification msg="Stacja dodana!".into() notification_type=NotificationType::Info/> }
+                    view! { cx, <Notification msg="Station added".into() notification_type=NotificationType::Info/> }
                         .into_view(cx)
                 }
                 Some(Err(e)) => {
@@ -77,7 +77,7 @@ pub fn Form(cx: Scope) -> impl IntoView {
                     type="submit"
                     class="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
                 >
-                    "Dodaj stację"
+                    "Add station"
                 </button>
             </div>
         </ActionForm>

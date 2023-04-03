@@ -9,24 +9,24 @@ pub fn Authorized(cx: Scope) -> impl IntoView {
     let last_result = update_available_blood.value();
 
     view! { cx,
-        <title>"Zaktualizuj stan krwi"</title>
+        <title>"Update blood availability"</title>
         <section class="w-full bg-gray-100">
             <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                 <div class="flex justify-center">
                     <div class="mt-16 w-1/2 rounded-lg bg-white p-8 shadow-lg lg:p-12">
                         <h1 class="text-black text-4xl text-center">
-                            "Aktualizuj stan krwi w stacji"
+                            "Update blood availability at blood donation station"
                         </h1>
                         <img class="my-10 rounded-2xl" src="blood_donation_3.jpg"/>
                         <ActionForm action=update_available_blood>
                             <div class="flex flex-row justify-center w-full space-x-4">
                                 <div class="flex justify-center w-1/2">
                                     <label class="sr-only" for="station_id">
-                                        "ID stacji"
+                                        "Station ID"
                                     </label>
                                     <input
                                         class="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                        placeholder="ID stacji"
+                                        placeholder="Station ID"
                                         type="text"
                                         name="station_id"
                                     />
@@ -128,7 +128,7 @@ pub fn Authorized(cx: Scope) -> impl IntoView {
                                 Some(Err(_)) => {
                                     view! { cx,
                                         <Notification
-                                            msg="Podano niewłaściwe dane.".into()
+                                            msg="Invalid values..".into()
                                             notification_type=NotificationType::Error
                                         />
                                     }
@@ -137,7 +137,7 @@ pub fn Authorized(cx: Scope) -> impl IntoView {
                                 Some(Ok(_)) => {
                                     view! { cx,
                                         <Notification
-                                            msg="Stan krwi został zaktualizowany.".into()
+                                            msg="Successfully updated.".into()
                                             notification_type=NotificationType::Info
                                         />
                                     }
@@ -153,7 +153,7 @@ pub fn Authorized(cx: Scope) -> impl IntoView {
                                     type="submit"
                                     class="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
                                 >
-                                    "Aktualizuj"
+                                    "Update"
                                 </button>
                             </div>
                         </ActionForm>
